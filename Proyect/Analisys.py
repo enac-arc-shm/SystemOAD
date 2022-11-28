@@ -17,3 +17,12 @@ def services_analisys(services):
                 lista_servicios.append(diccionario_services.copy())
                 contador = 0
     return lista_servicios
+
+def service_status(status):
+    if re.search(" active ", status) != None:
+        return "green"
+    else:
+        return "red"
+
+#if __name__ == "__main__":
+#    print(service_status("Active: active (running) since Mon 2022-11-28 12:09:10 CST; 59s ago"))

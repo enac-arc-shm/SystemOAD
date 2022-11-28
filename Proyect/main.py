@@ -26,12 +26,13 @@ from textual.widgets import (
     Static,
     TextLog,
 )
-from System import constrant, get_services_enabled, get_services_disabled
+from System import constrant, get_services_enabled, get_services_disabled, get_status_dhcpd
 
 #Obtation data
 constrant()
 services_enabled = get_services_enabled()
 services_disabled = get_services_disabled()
+status_service_dhcp = get_status_dhcpd()
 
 from_markup = Text.from_markup
 
@@ -91,13 +92,10 @@ WELCOME_MD = """
 """
 
 
-RICH_MD = """
+SERVICE_MD = """
 
-Textual is built on **Rich**, the popular Python library for advanced terminal output.
-
-Add content to your Textual App with Rich *renderables* (this text is written in Markdown and formatted with Rich's Markdown class).
-
-Here are some examples:
+Los servicios no instalados de forma predeterminada, principalmente aquellos servicios escenciales 
+como los son los protocolos **DHCP**, **SSH**, **DNS**, entre otros.
 
 
 """
@@ -357,8 +355,9 @@ class DemoApp(App):
                 Column(
                     Section(
                         SectionTitle("Servicios"),
-                        TextContent(Markdown(RICH_MD)),
-                        SubTitle("Pretty Printed data (try resizing the terminal)"),
+                        TextContent(Markdown(SERVICE_MD)),
+                        SectionTitle("Servicio DHCP archivo de configuración"),
+                        SubTitle(from_markup(f"[{status_service_dhcp['color']}]{status_service_dhcp['status']}", style = f"{status_service_dhcp['color']}")),
                         Static(Pretty(DATA, indent_guides=True), classes="pretty pad"),
                         SubTitle("JSON"),
                         Window(Static(JSON(JSON_EXAMPLE), expand=True), classes="pad"),
