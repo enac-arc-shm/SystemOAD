@@ -26,12 +26,16 @@ from textual.widgets import (
     Static,
     TextLog,
 )
-from System import constrant, get_services_enabled, get_services_disabled
+from System import constrant, get_services_enabled, get_services_disabled, get_status_dhcpd, get_document_dhcp_confi, get_status_dns, get_document_dns_confi
 
 #Obtation data
 constrant()
 services_enabled = get_services_enabled()
 services_disabled = get_services_disabled()
+status_service_dhcp = get_status_dhcpd()
+status_service_dns = get_status_dns()
+document_dhcp_confi = get_document_dhcp_confi()
+document_dns_confi = get_document_dns_confi()
 
 from_markup = Text.from_markup
 
@@ -90,14 +94,15 @@ WELCOME_MD = """
 
 """
 
+DOCUMEN_DHCP = document_dhcp_confi
 
-RICH_MD = """
+DOCUMENT_DNS = document_dns_confi
 
-Textual is built on **Rich**, the popular Python library for advanced terminal output.
 
-Add content to your Textual App with Rich *renderables* (this text is written in Markdown and formatted with Rich's Markdown class).
+SERVICE_MD = """
 
-Here are some examples:
+Los servicios no instalados de forma predeterminada, principalmente aquellos servicios escenciales 
+como los son los protocolos **DHCP**, **SSH**, **DNS**, entre otros.
 
 
 """
@@ -133,16 +138,7 @@ Sidebar.-hidden {
 }"""
 
 DATA = {
-    "foo": [
-        3.1427,
-        (
-            "Paul Atreides",
-            "Vladimir Harkonnen",
-            "Thufir Hawat",
-            "Gurney Halleck",
-            "Duncan Idaho",
-        ),
-    ],
+    "DHCP-Conf": get_document_dhcp_confi(),
 }
 
 WIDGETS_MD = """
@@ -176,30 +172,6 @@ Nuestra página ♥ [@click="app.open_link('https://www.asage.site')"]ASAGE.site
 
 """
 
-
-JSON_EXAMPLE = """{
-    "glossary": {
-        "title": "example glossary",
-		"GlossDiv": {
-            "title": "S",
-			"GlossList": {
-                "GlossEntry": {
-                    "ID": "SGML",
-					"SortAs": "SGML",
-					"GlossTerm": "Standard Generalized Markup Language",
-					"Acronym": "SGML",
-					"Abbrev": "ISO 8879:1986",
-					"GlossDef": {
-                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
-						"GlossSeeAlso": ["GML", "XML"]
-                    },
-					"GlossSee": "markup"
-                }
-            }
-        }
-    }
-}
-"""
 
 
 class Body(Container):
@@ -339,10 +311,10 @@ class DemoApp(App):
             TextLog(classes="-hidden", wrap=False, highlight=True, markup=True),
             Body(
                 QuickAccess(
-                    LocationLink("TOP", ".location-top"),
-                    LocationLink("Widgets", ".location-widgets"),
+                    LocationLink("Inicio", ".location-top"),
+                    LocationLink("Users", ".location-widgets"),
                     LocationLink("Servicios", ".location-services"),
-                    LocationLink("CSS", ".location-css"),
+                    LocationLink("Puertos", ".location-css"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
                 Column(
@@ -357,11 +329,13 @@ class DemoApp(App):
                 Column(
                     Section(
                         SectionTitle("Servicios"),
-                        TextContent(Markdown(RICH_MD)),
-                        SubTitle("Pretty Printed data (try resizing the terminal)"),
-                        Static(Pretty(DATA, indent_guides=True), classes="pretty pad"),
-                        SubTitle("JSON"),
-                        Window(Static(JSON(JSON_EXAMPLE), expand=True), classes="pad"),
+                        TextContent(Markdown(SERVICE_MD)),
+                        SectionTitle("Servicio DHCP - archivo de configuración"),
+                        SubTitle(from_markup(f"[{status_service_dhcp['color']}]{status_service_dhcp['status']}", style = f"{status_service_dhcp['color']}")),
+                        TextContent(Text(DOCUMEN_DHCP)),
+                        SectionTitle("Servicio DNS - archivos de configuración"),
+                        SubTitle(from_markup(f"[{status_service_dns['color']}]{status_service_dns['status']}", style = f"{status_service_dns['color']}")),
+                        TextContent(Text(DOCUMENT_DNS)),
                         SubTitle("Services - enabled"),
                         Static(services_enable_table, classes="table pad"),
                         SubTitle("Services - disabled"),

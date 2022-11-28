@@ -26,13 +26,14 @@ from textual.widgets import (
     Static,
     TextLog,
 )
-from System import constrant, get_services_enabled, get_services_disabled, get_status_dhcpd
+from System import constrant, get_services_enabled, get_services_disabled, get_status_dhcpd, get_document_dhcp_confi
 
 #Obtation data
 constrant()
 services_enabled = get_services_enabled()
 services_disabled = get_services_disabled()
 status_service_dhcp = get_status_dhcpd()
+document_dhcp_confi = get_document_dhcp_confi()
 
 from_markup = Text.from_markup
 
@@ -91,6 +92,9 @@ WELCOME_MD = """
 
 """
 
+DOCUMENT_DHCP = f"""
+{document_dhcp_confi}
+"""
 
 SERVICE_MD = """
 
@@ -131,16 +135,7 @@ Sidebar.-hidden {
 }"""
 
 DATA = {
-    "foo": [
-        3.1427,
-        (
-            "Paul Atreides",
-            "Vladimir Harkonnen",
-            "Thufir Hawat",
-            "Gurney Halleck",
-            "Duncan Idaho",
-        ),
-    ],
+    "DHCP-Conf": document_dhcp_confi,
 }
 
 WIDGETS_MD = """
