@@ -26,52 +26,67 @@ from textual.widgets import (
     Static,
     TextLog,
 )
+from System import constrant, get_services_enabled, get_services_disabled
+
+#Obtation data
+constrant()
+services_enabled = get_services_enabled()
+services_disabled = get_services_disabled()
 
 from_markup = Text.from_markup
 
-example_table = Table(
+services_enable_table = Table(
     show_edge=False,
     show_header=True,
     expand=True,
     row_styles=["none", "dim"],
     box=box.SIMPLE,
 )
-example_table.add_column(from_markup("[green]Date"), style="green", no_wrap=True)
-example_table.add_column(from_markup("[blue]Title"), style="blue")
-
-example_table.add_column(
-    from_markup("[magenta]Box Office"),
-    style="magenta",
+services_enable_table.add_column(from_markup("[white]Service"), style="white", no_wrap=True)
+services_enable_table.add_column(from_markup("[green]Status"), style="green")
+services_enable_table.add_column(
+    from_markup("[green]Vendor"),
+    style="green",
     justify="right",
     no_wrap=True,
 )
-example_table.add_row(
-    "Dec 20, 2019",
-    "Star Wars: The Rise of Skywalker",
-    "$375,126,118",
+
+for service in services_enabled:
+    services_enable_table.add_row(
+    service["service"],
+    "{data}".format(data = service["status"]),
+    "{data}".format(data = service["Vendor"]),
+    )
+#############################################################################################
+
+services_disabled_table = Table(
+    show_edge=False,
+    show_header=True,
+    expand=True,
+    row_styles=["none", "dim"],
+    box=box.SIMPLE,
 )
-example_table.add_row(
-    "May 25, 2018",
-    from_markup("[b]Solo[/]: A Star Wars Story"),
-    "$393,151,347",
-)
-example_table.add_row(
-    "Dec 15, 2017",
-    "Star Wars Ep. VIII: The Last Jedi",
-    from_markup("[bold]$1,332,539,889[/bold]"),
-)
-example_table.add_row(
-    "May 19, 1999",
-    from_markup("Star Wars Ep. [b]I[/b]: [i]The phantom Menace"),
-    "$1,027,044,677",
+services_disabled_table.add_column(from_markup("[white]Service"), style="white", no_wrap=True)
+services_disabled_table.add_column(from_markup("[red]Status"), style="red")
+services_disabled_table.add_column(
+    from_markup("[red]Vendor"),
+    style="red",
+    justify="right",
+    no_wrap=True,
 )
 
+for service in services_disabled:
+    services_disabled_table.add_row(
+    service["service"],
+    "{data}".format(data = service["status"]),
+    "{data}".format(data = service["Vendor"]),
+    )
 
 WELCOME_MD = """
 
-## Textual Demo
+## SystemOAD
 
-**Welcome**! Textual is a framework for creating sophisticated applications with the terminal.
+**System Of Analysis Devices**  es un sistema de analisis de dispositivos linux que te muestra aspectos relevantes de dispositivos basados en linux, dirigido principalmente hacia servidores.
 
 """
 
@@ -148,18 +163,16 @@ Build your own or use the builtin widgets.
 
 
 MESSAGE = """
-We hope you enjoy using Textual.
+SystemOAD analiza la información relevante de servicios y puertos en tu servidor.
 
-Here are some links. You can click these!
+La información recolectada es almacenada en un servidor online, puedes consultarlo en el siguiente enlace
+[@click="app.open_link('https://console.firebase.google.com/u/0/project/api-redes-366215/firestore/data/~2Fregistros_2022~2F06Hz9jpnVV6KV0fhBP45?hl=es')"]Fire - Database[/]
 
-[@click="app.open_link('https://textual.textualize.io')"]Textual Docs[/]
-
-[@click="app.open_link('https://github.com/Textualize/textual')"]Textual GitHub Repository[/]
-
-[@click="app.open_link('https://github.com/Textualize/rich')"]Rich GitHub Repository[/]
+Puedes consultar este proyecto en nuestro repositorio de GitHUb
+[@click="app.open_link('https://github.com/enac-arc-shm/SystemOAD')"]SystemOAD GitHub Repository[/]
 
 
-Built with ♥  by [@click="app.open_link('https://www.textualize.io')"]Textualize.io[/]
+Nuestra página ♥ [@click="app.open_link('https://www.asage.site')"]ASAGE.site[/]
 
 """
 
@@ -200,7 +213,7 @@ class Title(Static):
 class DarkSwitch(Horizontal):
     def compose(self) -> ComposeResult:
         yield Checkbox(value=self.app.dark)
-        yield Static("Dark mode toggle", classes="label")
+        yield Static("Dark mode", classes="label")
 
     def on_mount(self) -> None:
         watch(self.app, "dark", self.on_dark_change, init=False)
@@ -218,7 +231,7 @@ class Welcome(Container):
         yield Button("Start", variant="success")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        self.app.add_note("[b magenta]Start!")
+        self.app.add_note("[b magenta]Iniciado")
         self.app.query_one(".location-first").scroll_visible(duration=0.5, top=True)
 
 
@@ -236,12 +249,12 @@ class Message(Static):
 
 class Version(Static):
     def render(self) -> RenderableType:
-        return f"[b]v{version('textual')}"
+        return f"[b]v 1.0.1"
 
 
 class Sidebar(Container):
     def compose(self) -> ComposeResult:
-        yield Title("Textual Demo")
+        yield Title("SystemOAD")
         yield OptionGroup(Message(MESSAGE), Version())
         yield DarkSwitch()
 
@@ -307,7 +320,7 @@ class DemoApp(App):
     TITLE = "Textual Demo"
     BINDINGS = [
         ("ctrl+b", "toggle_sidebar", "Sidebar"),
-        ("ctrl+t", "app.toggle_dark", "Toggle Dark mode"),
+        ("ctrl+t", "app.toggle_dark", "Dark mode"),
         ("ctrl+s", "app.screenshot()", "Screenshot"),
         ("f1", "app.toggle_class('TextLog', '-hidden')", "Notes"),
         Binding("ctrl+c,ctrl+q", "app.quit", "Quit", show=True),
@@ -328,7 +341,7 @@ class DemoApp(App):
                 QuickAccess(
                     LocationLink("TOP", ".location-top"),
                     LocationLink("Widgets", ".location-widgets"),
-                    LocationLink("Rich content", ".location-rich"),
+                    LocationLink("Servicios", ".location-services"),
                     LocationLink("CSS", ".location-css"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
@@ -343,16 +356,18 @@ class DemoApp(App):
                 ),
                 Column(
                     Section(
-                        SectionTitle("Rich"),
+                        SectionTitle("Servicios"),
                         TextContent(Markdown(RICH_MD)),
                         SubTitle("Pretty Printed data (try resizing the terminal)"),
                         Static(Pretty(DATA, indent_guides=True), classes="pretty pad"),
                         SubTitle("JSON"),
                         Window(Static(JSON(JSON_EXAMPLE), expand=True), classes="pad"),
-                        SubTitle("Tables"),
-                        Static(example_table, classes="table pad"),
+                        SubTitle("Services - enabled"),
+                        Static(services_enable_table, classes="table pad"),
+                        SubTitle("Services - disabled"),
+                        Static(services_disabled_table, classes="table pad"),
                     ),
-                    classes="location-rich",
+                    classes="location-services",
                 ),
                 Column(
                     Section(
@@ -393,7 +408,7 @@ class DemoApp(App):
             sidebar.add_class("-hidden")
 
     def on_mount(self) -> None:
-        self.add_note("Textual Demo app is running")
+        self.add_note("Servicio SystemOAD iniciado")
         table = self.query_one(DataTable)
         table.add_column("Foo", width=20)
         table.add_column("Bar", width=20)
@@ -415,7 +430,7 @@ class DemoApp(App):
         """
         self.bell()
         path = self.save_screenshot(filename, path)
-        message = Text.assemble("Screenshot saved to ", (f"'{path}'", "bold green"))
+        message = Text.assemble("Captura de pantalla guardada en ", (f"'{path}'", "bold green"))
         self.add_note(message)
         self.screen.mount(Notification(message))
 
