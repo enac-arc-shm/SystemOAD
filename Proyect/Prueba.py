@@ -98,6 +98,24 @@ for service in services_disabled:
     "{data}".format(data = service["Vendor"]),
     )
 
+ports_status_table = Table(
+    show_edge=False,
+    show_header=True,
+    expand=True,
+    row_styles=["none", "dim"],
+    box=box.SIMPLE,
+)
+ports_status_table.add_column(from_markup("[white]Service"), style="white", no_wrap=True)
+ports_status_table.add_column(from_markup("[green]Status"), style="green")
+
+
+for port, status in Info_scan_ports['Ports'].items():
+    ports_status_table.add_row(
+    str(port),
+    status
+    )
+
+
 WELCOME_MD = """
 
 ## SystemOAD
@@ -340,6 +358,7 @@ class DemoApp(App):
                         TextContent(Markdown(PORTS_MD)),
                         SectionTitle(SECTION_TITLE_MD),
                         SubTitle(from_markup(f"{Info_scan_ports['Protocol']}", style = f"GREEN")),
+                        Static(ports_status_table, classes="table pad"),
                     ),
                     classes="location-ports",
                 ),

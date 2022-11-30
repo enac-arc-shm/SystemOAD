@@ -1,5 +1,4 @@
 import paramiko
-import re
 from paramiko.client import SSHClient
 from Analisys import services_analisys, service_status, users_analisys
 from Scann_ports import scann_ports
@@ -111,3 +110,4 @@ def constrant():
 
 if __name__ == "__main__":
     constrant()
+    print(get_scan_ports())
