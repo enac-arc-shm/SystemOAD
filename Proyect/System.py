@@ -1,14 +1,23 @@
 import paramiko
 import re
 from paramiko.client import SSHClient
-from Analisys import services_analisys, service_status
+from Analisys import services_analisys, service_status, users_analisys
 
+
+list_users = []
 services_enabled = ""
 services_disabled = ""
 document_dhcp_confi = ""
 document_dns_confi = ""
 status_dhcpd = {}
 status_dns = {}
+
+def get_list_users():
+    return list_users
+
+def set_list_users(data):
+    global list_users
+    list_users = data
 
 def get_status_dhcpd():
     return status_dhcpd
@@ -81,6 +90,7 @@ def constrant():
     document_dns_confi = query_device(conn, "cat /etc/named.conf")
     data_enabled = services_analisys(services_enabled_local)
     data_disaled = services_analisys(services_disabled_local)
+    set_list_users (users_analisys(users))
     set_services_enabled(data_enabled)
     set_services_disabled(data_disaled)
     set_status_dhcpd("status",status_dhcp_local)
@@ -92,4 +102,3 @@ def constrant():
 
 if __name__ == "__main__":
     constrant()
-    print(str(get_document_dhcp_confi()))

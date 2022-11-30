@@ -24,5 +24,14 @@ def service_status(status):
     else:
         return "red"
 
+def users_analisys(data):
+    list_users = []
+    data = data.split("\n")
+    for user in data:
+        user = user.split(":")
+        if len(user) > 1:
+            list_users.append(user.copy())
+    return list_users
+
 #if __name__ == "__main__":
 #    print(service_status("Active: active (running) since Mon 2022-11-28 12:09:10 CST; 59s ago"))

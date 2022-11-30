@@ -26,14 +26,26 @@ from textual.widgets import (
     Static,
     TextLog,
 )
-from System import constrant, get_services_enabled, get_services_disabled, get_status_dhcpd, get_document_dhcp_confi
+from System import (
+    constrant, 
+    get_services_enabled, 
+    get_services_disabled, 
+    get_status_dhcpd, 
+    get_document_dhcp_confi, 
+    get_status_dns, 
+    get_document_dns_confi,
+    get_list_users,
+)
 
 #Obtation data
 constrant()
 services_enabled = get_services_enabled()
 services_disabled = get_services_disabled()
 status_service_dhcp = get_status_dhcpd()
+status_service_dns = get_status_dns()
 document_dhcp_confi = get_document_dhcp_confi()
+document_dns_confi = get_document_dns_confi()
+list_users = get_list_users()
 
 from_markup = Text.from_markup
 
@@ -92,9 +104,10 @@ WELCOME_MD = """
 
 """
 
-DOCUMENT_DHCP = f"""
-{document_dhcp_confi}
-"""
+DOCUMEN_DHCP = document_dhcp_confi
+
+DOCUMENT_DNS = document_dns_confi
+
 
 SERVICE_MD = """
 
@@ -135,23 +148,14 @@ Sidebar.-hidden {
 }"""
 
 DATA = {
-    "DHCP-Conf": document_dhcp_confi,
+    "DHCP-Conf": get_document_dhcp_confi(),
 }
 
-WIDGETS_MD = """
+USERS_MB = """
 
-Textual widgets are powerful interactive components.
+La mayoria de usuarios implementan el interprete **bin/bash** de caso contrario son usurios especiales creados por el sistema
 
-Build your own or use the builtin widgets.
-
-- **Input** Text / Password input.
-- **Button** Clickable button with a number of styles.
-- **Checkbox** A checkbox to toggle between states.
-- **DataTable** A spreadsheet-like widget for navigating data. Cells may contain text or Rich renderables.
-- **TreeControl** An generic tree with expandable nodes.
-- **DirectoryTree** A tree of file and folders.
-- *... many more planned ...*
-
+Aquí una lista de los usuarios actuales del servidor
 """
 
 
@@ -169,30 +173,6 @@ Nuestra página ♥ [@click="app.open_link('https://www.asage.site')"]ASAGE.site
 
 """
 
-
-JSON_EXAMPLE = """{
-    "glossary": {
-        "title": "example glossary",
-		"GlossDiv": {
-            "title": "S",
-			"GlossList": {
-                "GlossEntry": {
-                    "ID": "SGML",
-					"SortAs": "SGML",
-					"GlossTerm": "Standard Generalized Markup Language",
-					"Acronym": "SGML",
-					"Abbrev": "ISO 8879:1986",
-					"GlossDef": {
-                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
-						"GlossSeeAlso": ["GML", "XML"]
-                    },
-					"GlossSee": "markup"
-                }
-            }
-        }
-    }
-}
-"""
 
 
 class Body(Container):
@@ -332,30 +312,36 @@ class DemoApp(App):
             TextLog(classes="-hidden", wrap=False, highlight=True, markup=True),
             Body(
                 QuickAccess(
-                    LocationLink("TOP", ".location-top"),
-                    LocationLink("Widgets", ".location-widgets"),
+                    LocationLink("Inicio", ".location-top"),
+                    LocationLink("Users", ".location-users"),
                     LocationLink("Servicios", ".location-services"),
-                    LocationLink("CSS", ".location-css"),
+                    LocationLink("Puertos", ".location-css"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
                 Column(
                     Section(
-                        SectionTitle("Widgets"),
-                        TextContent(Markdown(WIDGETS_MD)),
                         LoginForm(),
-                        DataTable(),
                     ),
-                    classes="location-widgets location-first",
+                    classes="location-login location-first",
+                ),
+                Column(
+                    Section(
+                        SectionTitle("Users"),
+                        TextContent(Markdown(USERS_MB)),
+                        DataTable(), 
+                    ),
+                    classes="location-users",
                 ),
                 Column(
                     Section(
                         SectionTitle("Servicios"),
                         TextContent(Markdown(SERVICE_MD)),
-                        SectionTitle("Servicio DHCP archivo de configuración"),
+                        SectionTitle("Servicio DHCP - archivo de configuración"),
                         SubTitle(from_markup(f"[{status_service_dhcp['color']}]{status_service_dhcp['status']}", style = f"{status_service_dhcp['color']}")),
-                        Static(Pretty(DATA, indent_guides=True), classes="pretty pad"),
-                        SubTitle("JSON"),
-                        Window(Static(JSON(JSON_EXAMPLE), expand=True), classes="pad"),
+                        TextContent(Text(DOCUMEN_DHCP)),
+                        SectionTitle("Servicio DNS - archivos de configuración"),
+                        SubTitle(from_markup(f"[{status_service_dns['color']}]{status_service_dns['status']}", style = f"{status_service_dns['color']}")),
+                        TextContent(Text(DOCUMENT_DNS)),
                         SubTitle("Services - enabled"),
                         Static(services_enable_table, classes="table pad"),
                         SubTitle("Services - disabled"),
@@ -404,15 +390,15 @@ class DemoApp(App):
     def on_mount(self) -> None:
         self.add_note("Servicio SystemOAD iniciado")
         table = self.query_one(DataTable)
-        table.add_column("Foo", width=20)
-        table.add_column("Bar", width=20)
-        table.add_column("Baz", width=20)
-        table.add_column("Foo", width=20)
-        table.add_column("Bar", width=20)
-        table.add_column("Baz", width=20)
+        table.add_column("Usuario", width=20)
+        table.add_column("ID", width=20)
+        table.add_column("ID Grupo", width=20)
+        table.add_column("Directorio", width=20)
+        table.add_column("Interprete", width=20)
         table.zebra_stripes = True
-        for n in range(20):
-            table.add_row(*[f"Cell ([b]{n}[/b], {col})" for col in range(6)])
+        for user in list_users:
+            #table.add_row(*[info for info in user])
+            table.add_row(user[0], user[2], user[3], user[5], user[6])
         self.query_one("Welcome Button", Button).focus()
 
     def action_screenshot(self, filename: str | None = None, path: str = "./") -> None:
