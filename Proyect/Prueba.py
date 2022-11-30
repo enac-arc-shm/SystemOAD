@@ -35,6 +35,7 @@ from System import (
     get_status_dns, 
     get_document_dns_confi,
     get_list_users,
+    get_scan_ports,
 )
 
 #Obtation data
@@ -46,6 +47,7 @@ status_service_dns = get_status_dns()
 document_dhcp_confi = get_document_dhcp_confi()
 document_dns_confi = get_document_dns_confi()
 list_users = get_list_users()
+Info_scan_ports = get_scan_ports()
 
 from_markup = Text.from_markup
 
@@ -71,7 +73,7 @@ for service in services_enabled:
     "{data}".format(data = service["status"]),
     "{data}".format(data = service["Vendor"]),
     )
-#############################################################################################
+
 
 services_disabled_table = Table(
     show_edge=False,
@@ -141,6 +143,8 @@ La mayoria de usuarios implementan el interprete **bin/bash** de caso contrario 
 Aquí una lista de los usuarios actuales del servidor
 """
 
+SECTION_TITLE_MD = " {host} -> {state}".format(host = Info_scan_ports["Host"], state = Info_scan_ports["State"])
+
 
 MESSAGE = """
 SystemOAD analiza la información relevante de servicios y puertos en tu servidor.
@@ -155,7 +159,6 @@ Puedes consultar este proyecto en nuestro repositorio de GitHUb
 Nuestra página ♥ [@click="app.open_link('https://www.asage.site')"]ASAGE.site[/]
 
 """
-
 
 
 class Body(Container):
@@ -335,6 +338,8 @@ class DemoApp(App):
                     Section(
                         SectionTitle("Analisis de puertos"),
                         TextContent(Markdown(PORTS_MD)),
+                        SectionTitle(SECTION_TITLE_MD),
+                        SubTitle(from_markup(f"{Info_scan_ports['Protocol']}", style = f"GREEN")),
                     ),
                     classes="location-ports",
                 ),

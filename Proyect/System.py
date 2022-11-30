@@ -2,7 +2,7 @@ import paramiko
 import re
 from paramiko.client import SSHClient
 from Analisys import services_analisys, service_status, users_analisys
-
+from Scann_ports import scann_ports
 
 list_users = []
 services_enabled = ""
@@ -11,6 +11,14 @@ document_dhcp_confi = ""
 document_dns_confi = ""
 status_dhcpd = {}
 status_dns = {}
+scan_ports = {}
+
+def get_scan_ports():
+    return scan_ports
+
+def set_scan_ports(data):
+    global scan_ports
+    scan_ports = data
 
 def get_list_users():
     return list_users
@@ -99,6 +107,7 @@ def constrant():
     set_status_dns("color",service_status(status_dns_local))
     set_document_dhcp_confi(document_dhcp_confi)
     set_document_dns_confi(document_dns_confi)
+    set_scan_ports(scann_ports("localhost"))
 
 if __name__ == "__main__":
     constrant()

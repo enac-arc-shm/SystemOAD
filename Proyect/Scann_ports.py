@@ -1,11 +1,11 @@
 import nmap
 
-def scann_ports():
+def scann_ports(ip):
     info_protocols = {}
     # initialize the port scanner
     nmScan = nmap.PortScanner()
     # scan localhost for ports in range 21-443
-    nmScan.scan('127.0.0.1', '21-443')
+    nmScan.scan(ip, '21-443')
     # run a loop to print all the found result about the ports
     for host in nmScan.all_hosts():
         info_protocols["Host"] = f"{host} - {nmScan[host].hostname()}"
