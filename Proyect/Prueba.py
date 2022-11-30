@@ -117,36 +117,19 @@ como los son los protocolos **DHCP**, **SSH**, **DNS**, entre otros.
 
 """
 
-CSS_MD = """
+PORTS_MD = """
 
-Textual uses Cascading Stylesheets (CSS) to create Rich interactive User Interfaces.
+Nmap (Network Mapper) es un escáner de seguridad, originalmente escrito por Gordon Lyon (también conocido por su seudónimo Fyodor Vaskovich), y se usa para descubrir hosts y servicios en una red informática, Nmap envía paquetes especialmente diseñados a los hosts de destino y luego analiza sus respuestas.
 
-- **Easy to learn** - much simpler than browser CSS
-- **Live editing** - see your changes without restarting the app!
+Algunas de las características útiles de Nmap incluyen:
 
-Here's an example of some CSS used in this app:
+- **Host Discovery**: esto permite identificar hosts en cualquier red. Por ejemplo, enumerar los hosts que responden a las solicitudes de TCP y/o ICMP o que tienen abierto un puerto en particular.
+- **Escaneo de puertos**: enumerar (contar y enumerar uno por uno) todos los puertos abiertos en los hosts de destino.
+- **Detección de versión**: interrogar a los servicios de red en dispositivos remotos para determinar el nombre de la aplicación y el número de versión.
+- **Detección del sistema operativo**: determinación del sistema operativo y las características del hardware de los dispositivos de red.
+- Interacción mediante secuencias de comandos con el objetivo: con el motor de secuencias de comandos Nmap (NSE) y el lenguaje de programación Lua, podemos escribir fácilmente secuencias de comandos para realizar operaciones en los dispositivos de red.
 
 """
-
-
-EXAMPLE_CSS = """\
-Screen {
-    layers: base overlay notes;
-    overflow: hidden;
-}
-
-Sidebar {
-    width: 40;
-    background: $panel;
-    transition: offset 500ms in_out_cubic;
-    layer: overlay;
-
-}
-
-Sidebar.-hidden {
-    offset-x: -100%;
-}"""
-
 DATA = {
     "DHCP-Conf": get_document_dhcp_confi(),
 }
@@ -259,7 +242,7 @@ class LocationLink(Static):
 
     def on_click(self) -> None:
         self.app.query_one(self.reveal).scroll_visible(top=True, duration=0.5)
-        self.app.add_note(f"Scrolling to [b]{self.reveal}[/b]")
+        self.app.add_note(f"Sección [b]{self.reveal}[/b]")
 
 
 class LoginForm(Container):
@@ -287,10 +270,9 @@ class Notification(Static):
     def on_click(self) -> None:
         self.remove()
 
-
 class DemoApp(App):
     CSS_PATH = "style.css"
-    TITLE = "Textual Demo"
+    TITLE = "SystemOAD"
     BINDINGS = [
         ("ctrl+b", "toggle_sidebar", "Sidebar"),
         ("ctrl+t", "app.toggle_dark", "Dark mode"),
@@ -315,7 +297,7 @@ class DemoApp(App):
                     LocationLink("Inicio", ".location-top"),
                     LocationLink("Users", ".location-users"),
                     LocationLink("Servicios", ".location-services"),
-                    LocationLink("Puertos", ".location-css"),
+                    LocationLink("Puertos", ".location-ports"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
                 Column(
@@ -351,21 +333,10 @@ class DemoApp(App):
                 ),
                 Column(
                     Section(
-                        SectionTitle("CSS"),
-                        TextContent(Markdown(CSS_MD)),
-                        Window(
-                            Static(
-                                Syntax(
-                                    example_css,
-                                    "css",
-                                    theme="material",
-                                    line_numbers=True,
-                                ),
-                                expand=True,
-                            )
-                        ),
+                        SectionTitle("Analisis de puertos"),
+                        TextContent(Markdown(PORTS_MD)),
                     ),
-                    classes="location-css",
+                    classes="location-ports",
                 ),
             ),
         )
