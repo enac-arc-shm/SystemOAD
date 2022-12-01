@@ -36,6 +36,12 @@ from System import (
     get_document_dns_confi,
     get_list_users,
     get_scan_ports,
+    upload_user_list,
+    upload_services_enabled,
+    upload_services_disabled,
+    upload_document_dhcp,
+    upload_document_dns,
+    upload_scann_ports,
 )
 
 constrant()
@@ -213,8 +219,20 @@ class Firebase(Container):
         yield Button("Subir información", variant="success")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        self.app.add_note("[b magenta]Iniciado")
-        self.app.query_one(".location-first").scroll_visible(duration=0.5, top=True)
+        message = Text.assemble("Subiendo información... ", "bold green")
+        self.screen.mount(Notification(message))
+        upload_users = upload_user_list()
+        self.app.add_note(upload_users)
+        upload_services_en = upload_services_enabled()
+        self.app.add_note(upload_services_en)
+        upload_services_di = upload_services_disabled()
+        self.app.add_note(upload_services_di)
+        upload_document_dhcp_mg = upload_document_dhcp()
+        self.app.add_note(upload_document_dhcp_mg)
+        upload_document_dns_mg = upload_document_dns()
+        self.app.add_note(upload_document_dns_mg)
+        upload_scann_ports_mg = upload_scann_ports()
+        self.app.add_note(upload_scann_ports_mg)
 
 class Welcome(Container):
     def compose(self) -> ComposeResult:

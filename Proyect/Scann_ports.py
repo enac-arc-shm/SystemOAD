@@ -15,9 +15,9 @@ def scann_ports(ip):
             lport = nmScan[host][proto].keys()
             info_ports = {}
             for port in lport:
-                info_ports[port] = nmScan[host][proto][port]['state']
+                info_ports[str(port)] = nmScan[host][proto][port]['state']
             info_protocols["Ports"] = info_ports
     return info_protocols
 
 if __name__ == "__main__":
-    print(scann_ports())
+    print(scann_ports("192.168.12.1"))

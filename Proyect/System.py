@@ -2,12 +2,13 @@ import paramiko
 import os
 import sys
 import getpass
+import time
 from paramiko.client import SSHClient
 from Analisys import services_analisys, service_status, users_analisys
 from Scann_ports import scann_ports
 from colorama import Fore
 from tqdm import tqdm
-#from API_Firebase import agregar_registros_lista, agregar_registros_lista_unique, agregar_registros_diccionarios
+from API_Firebase import agregar_registros_lista, agregar_registros_lista_unique, agregar_registros_diccionarios,agregar_registros_diccionario
 
 list_users = []
 services_enabled = ""
@@ -172,6 +173,50 @@ def constrant():
     loop.set_description("[+] Ecaneando puertos".format(19))
     loop.update(1)
     set_scan_ports(scann_ports(ip))
+    loop.update(1)
+    loop.set_description("[+] Iniciando terminal line interface".format(19))
+    time.sleep(3)
     loop.close()
 
-#def upload_content():
+
+def upload_user_list():
+    try:
+        agregar_registros_lista("Lista de usuarios servidores", list_users)
+        return "[b green][+] List de usuarios cargada correctamente"
+    except:
+        return"[b red][X] Error al subir lista de usuarios"
+
+def upload_services_enabled():
+    #try:
+        agregar_registros_diccionarios("Servicios","Lista de servicios habilitados", services_enabled)
+        return "[b green][+] Servicios enables subidos correctamente"
+    #except:
+        #return"[b red][X] Error al subir lista de servicios enabled"
+
+def upload_services_disabled():
+    try:
+        agregar_registros_diccionarios("Servicios", "Lista de servicios habilitados", services_disabled)
+        return "[b green][+] Servicios disabled subidos correctamente"
+    except:
+        return"[b red][X] Error al subir lista de servicios disabled"
+
+def upload_document_dhcp():
+    try:
+        agregar_registros_lista_unique("Document Confi", "Documents DHCP", str(document_dhcp_confi))
+        return "[b green][+] Documento de configuración DHCP subido correctamente"
+    except:
+        return"[b red][X] Error al subir documento de configuración DHCP"
+
+def upload_document_dns():
+    try:
+        agregar_registros_lista_unique("Document Confi", "Documents DNS", str(document_dhcp_confi))
+        return "[b green][+] Documento de configuración DNS subido correctamente"
+    except:
+        return"[b red][X] Error al subir documento de configuración DNS"
+
+def upload_scann_ports():
+    try:
+        agregar_registros_diccionario("Escaeno de puertos", scan_ports)
+        return "[b green][+] Escaneo de puertos subido correctamente"
+    except:
+        return"[b red][X] Error al subir el escaneo de puertos"
