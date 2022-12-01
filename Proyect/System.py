@@ -7,6 +7,7 @@ from Analisys import services_analisys, service_status, users_analisys
 from Scann_ports import scann_ports
 from colorama import Fore
 from tqdm import tqdm
+#from API_Firebase import agregar_registros_lista, agregar_registros_lista_unique, agregar_registros_diccionarios
 
 list_users = []
 services_enabled = ""
@@ -173,6 +174,4 @@ def constrant():
     set_scan_ports(scann_ports(ip))
     loop.close()
 
-
-if __name__ == "__main__":
-    constrant()
+#def upload_content():

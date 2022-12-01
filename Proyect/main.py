@@ -269,7 +269,7 @@ class LocationLink(Static):
 class LoginForm(Container):
     def compose(self) -> ComposeResult:
         yield Static("Username", classes="label", id="user")
-        yield Static("Password", classes="label")
+        yield Input("Password", classes="label")
         yield Input(placeholder="Password", password=True, id="passwd")
         yield Static()
         yield Button("Login", variant="primary")
@@ -323,12 +323,12 @@ class DemoApp(App):
                     LocationLink("Puertos", ".location-ports"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
-                #Column(
-                #    Section(
-                #        LoginForm(),
-                #    ),
-                #    classes="location-login location-first",
-                #),
+                Column(
+                    Section(
+                        LoginForm(),
+                    ),
+                    classes="location-login location-first",
+                ),
                 Column(
                     Section(
                         SectionTitle("Users"),

@@ -154,6 +154,11 @@ DATA = {
     "DHCP-Conf": get_document_dhcp_confi(),
 }
 
+API_FIREBASE_MB = """
+La información extraida de tu servior remoto puede ser subido en una base de datos para su futuro analisis en busca de mejoras en los servicios
+
+"""
+
 USERS_MB = """
 
 La mayoria de usuarios implementan el interprete **bin/bash** de caso contrario son usurios especiales creados por el sistema
@@ -202,6 +207,15 @@ class DarkSwitch(Horizontal):
         self.app.dark = event.value
 
 
+class Firebase(Container):
+    def compose(self) -> ComposeResult:
+        yield Static(Markdown(API_FIREBASE_MB))
+        yield Button("Subir información", variant="success")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.app.add_note("[b magenta]Iniciado")
+        self.app.query_one(".location-first").scroll_visible(duration=0.5, top=True)
+
 class Welcome(Container):
     def compose(self) -> ComposeResult:
         yield Static(Markdown(WELCOME_MD))
@@ -210,7 +224,6 @@ class Welcome(Container):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.app.add_note("[b magenta]Iniciado")
         self.app.query_one(".location-first").scroll_visible(duration=0.5, top=True)
-
 
 class OptionGroup(Container):
     pass
@@ -266,18 +279,6 @@ class LocationLink(Static):
         self.app.add_note(f"Sección [b]{self.reveal}[/b]")
 
 
-class LoginForm(Container):
-    def compose(self) -> ComposeResult:
-        yield Static("Username", classes="label", id="user")
-        yield Static("Password", classes="label")
-        yield Input(placeholder="Password", password=True, id="passwd")
-        yield Static()
-        yield Button("Login", variant="primary")
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        self.username = self.login_grid.username.content
-        self.app.add_note(self.username)
-
-
 class Window(Container):
     pass
 
@@ -321,6 +322,7 @@ class DemoApp(App):
                     LocationLink("Users", ".location-users"),
                     LocationLink("Servicios", ".location-services"),
                     LocationLink("Puertos", ".location-ports"),
+                    LocationLink("Firebase", ".location-end"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
                 #Column(
@@ -363,6 +365,14 @@ class DemoApp(App):
                         Static(ports_status_table, classes="table pad"),
                     ),
                     classes="location-ports",
+                ),
+                Column(
+                    Section(
+                        SectionTitle("API - FIREBASE"),
+                        SubTitle(from_markup("Conectar con API - > FIREBASE", style = "green")),
+                        Firebase(),
+                    ),
+                    classes="location-end",
                 ),
             ),
         )

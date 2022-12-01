@@ -98,6 +98,20 @@ Welcome Button {
     margin-top: 1;
 }
 
+Firebase {
+    background: $boost;
+    height: auto;    
+    max-width: 100;
+    min-width: 40;
+    padding: 1 2;  
+    box-sizing: border-box;
+}
+
+Firebase Button {
+    width: 100%;
+    margin-top: 1;
+}
+
 Column {
     height: auto;
     min-height: 100vh;
