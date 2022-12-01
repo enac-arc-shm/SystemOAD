@@ -35,6 +35,7 @@ from System import (
     get_status_dns, 
     get_document_dns_confi,
     get_list_users,
+    get_scan_ports,
 )
 
 #Obtation data
@@ -46,6 +47,7 @@ status_service_dns = get_status_dns()
 document_dhcp_confi = get_document_dhcp_confi()
 document_dns_confi = get_document_dns_confi()
 list_users = get_list_users()
+Info_scan_ports = get_scan_ports()
 
 from_markup = Text.from_markup
 
@@ -71,7 +73,7 @@ for service in services_enabled:
     "{data}".format(data = service["status"]),
     "{data}".format(data = service["Vendor"]),
     )
-#############################################################################################
+
 
 services_disabled_table = Table(
     show_edge=False,
@@ -96,6 +98,24 @@ for service in services_disabled:
     "{data}".format(data = service["Vendor"]),
     )
 
+ports_status_table = Table(
+    show_edge=False,
+    show_header=True,
+    expand=True,
+    row_styles=["none", "dim"],
+    box=box.SIMPLE,
+)
+ports_status_table.add_column(from_markup("[white]Service"), style="white", no_wrap=True)
+ports_status_table.add_column(from_markup("[green]Status"), style="green")
+
+
+for port, status in Info_scan_ports['Ports'].items():
+    ports_status_table.add_row(
+    str(port),
+    status
+    )
+
+
 WELCOME_MD = """
 
 ## SystemOAD
@@ -117,36 +137,19 @@ como los son los protocolos **DHCP**, **SSH**, **DNS**, entre otros.
 
 """
 
-CSS_MD = """
+PORTS_MD = """
 
-Textual uses Cascading Stylesheets (CSS) to create Rich interactive User Interfaces.
+Nmap (Network Mapper) es un escáner de seguridad, originalmente escrito por Gordon Lyon (también conocido por su seudónimo Fyodor Vaskovich), y se usa para descubrir hosts y servicios en una red informática, Nmap envía paquetes especialmente diseñados a los hosts de destino y luego analiza sus respuestas.
 
-- **Easy to learn** - much simpler than browser CSS
-- **Live editing** - see your changes without restarting the app!
+Algunas de las características útiles de Nmap incluyen:
 
-Here's an example of some CSS used in this app:
+- **Host Discovery**: esto permite identificar hosts en cualquier red. Por ejemplo, enumerar los hosts que responden a las solicitudes de TCP y/o ICMP o que tienen abierto un puerto en particular.
+- **Escaneo de puertos**: enumerar (contar y enumerar uno por uno) todos los puertos abiertos en los hosts de destino.
+- **Detección de versión**: interrogar a los servicios de red en dispositivos remotos para determinar el nombre de la aplicación y el número de versión.
+- **Detección del sistema operativo**: determinación del sistema operativo y las características del hardware de los dispositivos de red.
+- Interacción mediante secuencias de comandos con el objetivo: con el motor de secuencias de comandos Nmap (NSE) y el lenguaje de programación Lua, podemos escribir fácilmente secuencias de comandos para realizar operaciones en los dispositivos de red.
 
 """
-
-
-EXAMPLE_CSS = """\
-Screen {
-    layers: base overlay notes;
-    overflow: hidden;
-}
-
-Sidebar {
-    width: 40;
-    background: $panel;
-    transition: offset 500ms in_out_cubic;
-    layer: overlay;
-
-}
-
-Sidebar.-hidden {
-    offset-x: -100%;
-}"""
-
 DATA = {
     "DHCP-Conf": get_document_dhcp_confi(),
 }
@@ -157,6 +160,8 @@ La mayoria de usuarios implementan el interprete **bin/bash** de caso contrario 
 
 Aquí una lista de los usuarios actuales del servidor
 """
+
+SECTION_TITLE_MD = " {host} -> {state}".format(host = Info_scan_ports["Host"], state = Info_scan_ports["State"])
 
 
 MESSAGE = """
@@ -172,7 +177,6 @@ Puedes consultar este proyecto en nuestro repositorio de GitHUb
 Nuestra página ♥ [@click="app.open_link('https://www.asage.site')"]ASAGE.site[/]
 
 """
-
 
 
 class Body(Container):
@@ -259,7 +263,7 @@ class LocationLink(Static):
 
     def on_click(self) -> None:
         self.app.query_one(self.reveal).scroll_visible(top=True, duration=0.5)
-        self.app.add_note(f"Scrolling to [b]{self.reveal}[/b]")
+        self.app.add_note(f"Sección [b]{self.reveal}[/b]")
 
 
 class LoginForm(Container):
@@ -287,10 +291,9 @@ class Notification(Static):
     def on_click(self) -> None:
         self.remove()
 
-
 class DemoApp(App):
     CSS_PATH = "style.css"
-    TITLE = "Textual Demo"
+    TITLE = "SystemOAD"
     BINDINGS = [
         ("ctrl+b", "toggle_sidebar", "Sidebar"),
         ("ctrl+t", "app.toggle_dark", "Dark mode"),
@@ -305,7 +308,7 @@ class DemoApp(App):
         self.query_one(TextLog).write(renderable)
 
     def compose(self) -> ComposeResult:
-        example_css = "\n".join(Path(self.css_path[0]).read_text().splitlines()[:50])
+        #example_css = "\n".join(Path(self.css_path[0]).read_text().splitlines()[:50])
         yield Container(
             Sidebar(classes="-hidden"),
             Header(show_clock=True),
@@ -315,7 +318,7 @@ class DemoApp(App):
                     LocationLink("Inicio", ".location-top"),
                     LocationLink("Users", ".location-users"),
                     LocationLink("Servicios", ".location-services"),
-                    LocationLink("Puertos", ".location-css"),
+                    LocationLink("Puertos", ".location-ports"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
                 Column(
@@ -351,21 +354,13 @@ class DemoApp(App):
                 ),
                 Column(
                     Section(
-                        SectionTitle("CSS"),
-                        TextContent(Markdown(CSS_MD)),
-                        Window(
-                            Static(
-                                Syntax(
-                                    example_css,
-                                    "css",
-                                    theme="material",
-                                    line_numbers=True,
-                                ),
-                                expand=True,
-                            )
-                        ),
+                        SectionTitle("Analisis de puertos"),
+                        TextContent(Markdown(PORTS_MD)),
+                        SectionTitle(SECTION_TITLE_MD),
+                        SubTitle(from_markup(f"{Info_scan_ports['Protocol']}", style = f"GREEN")),
+                        Static(ports_status_table, classes="table pad"),
                     ),
-                    classes="location-css",
+                    classes="location-ports",
                 ),
             ),
         )
