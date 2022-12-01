@@ -187,11 +187,11 @@ def upload_user_list():
         return"[b red][X] Error al subir lista de usuarios"
 
 def upload_services_enabled():
-    #try:
+    try:
         agregar_registros_diccionarios("Servicios","Lista de servicios habilitados", services_enabled)
         return "[b green][+] Servicios enables subidos correctamente"
-    #except:
-        #return"[b red][X] Error al subir lista de servicios enabled"
+    except:
+        return"[b red][X] Error al subir lista de servicios enabled"
 
 def upload_services_disabled():
     try:
