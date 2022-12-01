@@ -38,7 +38,6 @@ from System import (
     get_scan_ports,
 )
 
-#Obtation data
 constrant()
 services_enabled = get_services_enabled()
 services_disabled = get_services_disabled()
@@ -48,6 +47,7 @@ document_dhcp_confi = get_document_dhcp_confi()
 document_dns_confi = get_document_dns_confi()
 list_users = get_list_users()
 Info_scan_ports = get_scan_ports()
+val_input = ""
 
 from_markup = Text.from_markup
 
@@ -268,12 +268,14 @@ class LocationLink(Static):
 
 class LoginForm(Container):
     def compose(self) -> ComposeResult:
-        yield Static("Username", classes="label")
-        yield Input(placeholder="Username")
+        yield Static("Username", classes="label", id="user")
         yield Static("Password", classes="label")
-        yield Input(placeholder="Password", password=True)
+        yield Input(placeholder="Password", password=True, id="passwd")
         yield Static()
         yield Button("Login", variant="primary")
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.username = self.login_grid.username.content
+        self.app.add_note(self.username)
 
 
 class Window(Container):
@@ -321,19 +323,19 @@ class DemoApp(App):
                     LocationLink("Puertos", ".location-ports"),
                 ),
                 AboveFold(Welcome(), classes="location-top"),
-                Column(
-                    Section(
-                        LoginForm(),
-                    ),
-                    classes="location-login location-first",
-                ),
+                #Column(
+                #    Section(
+                #        LoginForm(),
+                #    ),
+                #    classes="location-login location-first",
+                #),
                 Column(
                     Section(
                         SectionTitle("Users"),
                         TextContent(Markdown(USERS_MB)),
                         DataTable(), 
                     ),
-                    classes="location-users",
+                    classes="location-users location-first",
                 ),
                 Column(
                     Section(
@@ -369,7 +371,6 @@ class DemoApp(App):
     def action_open_link(self, link: str) -> None:
         self.app.bell()
         import webbrowser
-
         webbrowser.open(link)
 
     def action_toggle_sidebar(self) -> None:

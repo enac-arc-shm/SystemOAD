@@ -170,7 +170,7 @@ def constrant():
     set_document_dns_confi(document_dns_confi)
     loop.set_description("[+] Ecaneando puertos".format(19))
     loop.update(1)
-    set_scan_ports(scann_ports("localhost"))
+    set_scan_ports(scann_ports(ip))
     loop.close()
 
 
